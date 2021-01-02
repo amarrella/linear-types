@@ -1,5 +1,4 @@
-{ system ? builtins.currentSystem
-, pkgs ?  import ./nixpkgs.nix { inherit system; }
+{ pkgs ?  import ./nixpkgs.nix {}
 , ghc ? pkgs.haskell.compiler.ghcHEAD
 }:
 
