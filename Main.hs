@@ -34,5 +34,30 @@ writeToFile' x =
     Control.return (Ur ())
 
 
+---
+-- Adapted from https://www.tweag.io/blog/2017-03-13-linear-types/ 
+data S a -- Send capability
+data R a -- Receive capability
+
+newCaps :: (R a %1-> S a %1-> Linear.RIO ()) %1-> Linear.RIO ()
+newCaps consume = undefined consume
+
+send :: S a %1-> a %1-> Linear.RIO ()
+send sendCapability msg = undefined sendCapability msg
+
+receive :: R a %1-> (a %1-> Linear.RIO ()) %1-> Linear.RIO ()
+receive receiveCapability f = 
+  undefined receiveCapability f
+
+type P = (Int, Int, Int %1-> Linear.RIO ())
+
+server :: P %1-> Linear.RIO ()
+server (n, p, k) = k (n + p)
+
+client :: (P %1-> Linear.RIO ()) %1-> Linear.RIO ()
+client sendToSrvr = newCaps $ \r s -> Control.do
+  sendToSrvr (42, 57, send s)
+  receive r (\n -> undefined n )
+
 main :: IO ()
 main = writeToFile' "Hello, Haskell!"
